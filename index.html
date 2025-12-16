@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Phaser WASD Character</title>
+  <script src="https://cdn.jsdelivr.net/npm/phaser@3/dist/phaser.js"></script>
+  <style>
+    body { margin: 0; background: #111; }
+    canvas { display: block; margin: auto; }
+  </style>
+</head>
+<body>
+
+<script>
+const config = {
+  type: Phaser.AUTO,
+  width: 800,
+  height: 600,
+  physics: {
+    default: 'arcade',
+    arcade: {
+      gravity: { y: 0 },
+      debug: false
+    }
+  },
+  scene: {
+    preload,
+    create,
+    update
+  }
+};
+
+const game = new Phaser.Game(config);
+
+let player;
+let keys;
+
+function preload() {
+  // 🔹 Replace with your sprite sheet file
+  this.load.spritesheet('player', 'player.png', {
+    frameWidth: 32,
+    frameHeight: 32
+  });
+}
+
+function create() {
+  player = this.physics.add.sprite(400, 300, 'player');
+  player.setCollideWorldBounds(true);
+
+  // WASD controls
+  keys = this.input.keyboard.addKeys({
+    up: 'W',
+    down: 'S',
+    left: 'A',
+    right: 'D'
+  });
+
+  // Basic walk animation (frames 0–3)
+  this.anims.create({
+    key: 'walk',
+    frames: this.anims.generateFrameNumbers('player', { start: 0, end: 3 }),
+    frameRate: 10,
+    repeat: -1
+  });
+}
+
+function update() {
+  player.setVelocity(0);
+
+  if (keys.left.isDown) {
+    player.setVelocityX(-200);
+    player.flipX = true;
+    player.anims.play('walk', true);
+  }
+  else if (keys.right.isDown) {
+    player.setVelocityX(200);
+    player.flipX = false;
+    player.anims.play('walk', true);
+  }
+
+  if (keys.up.isDown) {
+    player.setVelocityY(-200);
+    player.anims.play('walk', true);
+  }
+  else if (keys.down.isDown) {
+    player.setVelocityY(200);
+    player.anims.play('walk', true);
+  }
+
+  // Stop animation when idle
+  if (
+    !keys.left.isDown &&
+    !keys.right.isDown &&
+    !keys.up.isDown &&
+    !keys.down.isDown
+  ) {
+    player.anims.stop();
+  }
+}
+</script>
+
+</body>
+</html>
